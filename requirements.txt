@@ -1,0 +1,8 @@
+psycopg2-binary
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+tensorflow        # o torch, según lo que defina el profe
+jupyter
