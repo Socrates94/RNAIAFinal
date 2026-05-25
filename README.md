@@ -12,11 +12,7 @@ IA/
 │   └── Dry_Bean_Dataset.csv          # 13 611 muestras, 17 columnas
 │
 ├── Graficas/
-│   ├── EDA/                          # Graficas del analisis exploratorio
-│   │   ├── distribucion_clases.png
-│   │   ├── histogramas_features.png
-│   │   ├── heatmap_correlacion.png
-│   │   └── boxplots_por_clase.png
+│   ├── EDA/                          # Graficas del analisis exploratorio (no versionadas)
 │   └── Resultados/                   # Graficas del optimizador (punto 4 del examen)
 │       ├── evolucion_fitness.png
 │       └── tendencia_central.png
@@ -28,11 +24,13 @@ IA/
 │   ├── split_data.py                 # Split estratificado 70/15/15 (train/val/test)
 │   ├── mlp_trainer.py                # MLPClassifier: crear, entrenar, evaluar_fitness, curva de perdida
 │   ├── metrics.py                    # Accuracy, F1-macro, F1-weighted, matriz de confusion
-│   ├── wolf.py                       # (pendiente) Individuo/lobo: genes = hiperparametros del MLP
-│   ├── ga.py                         # (pendiente) Algoritmo Genetico: cruce y mutacion
-│   ├── gwo.py                        # (pendiente) Grey Wolf Optimizer
-│   ├── hybrid_optimizer.py           # (pendiente) Metaheuristica hibrida GWO-GA
-│   └── visualizer.py                 # Graficas de evolucion del optimizador → Graficas/Resultados/
+│   ├── visualizer.py                 # Graficas de evolucion del optimizador → Graficas/Resultados/
+│   └── metaheuristicos/              # Subpaquete: logica de optimizacion de hiperparametros
+│       ├── __init__.py
+│       ├── wolf.py                   # Individuo/lobo: genes = hiperparametros del MLP
+│       ├── ga.py                     # Algoritmo Genetico: cruce, mutacion y seleccion
+│       ├── gwo.py                    # Grey Wolf Optimizer
+│       └── hybrid_optimizer.py      # Metaheuristica hibrida GWO-GA
 │
 ├── venv/                             # Entorno virtual Python (no versionado)
 ├── requirements.txt
@@ -48,7 +46,8 @@ main.py
   ├─ 1 ─► analisis_exploratorio.py   →  Graficas/EDA/
   ├─ 2 ─► preprocessing.py           →  X_scaled, y_encoded, le
   ├─ 3 ─► split_data.py              →  X_train / X_val / X_test  (70/15/15, estratificado)
-  ├─ 4 ─► hybrid_optimizer.py        →  mejores hiperparametros
+  ├─ 4 ─► metaheuristicos/
+  │           ├── hybrid_optimizer.py →  mejores hiperparametros
   │           ├── gwo.py
   │           ├── ga.py
   │           ├── wolf.py
@@ -71,19 +70,19 @@ main.py
 
 ## Estado de implementacion
 
-| Archivo                   | Estado    | Descripcion                                           |
-|---------------------------|-----------|-------------------------------------------------------|
-| `analisis_exploratorio.py`| Completo  | EDA con 4 graficas exportadas                         |
-| `preprocessing.py`        | Completo  | Carga, limpieza y normalizacion                       |
-| `split_data.py`           | Completo  | Split estratificado 70/15/15 reproducible             |
-| `mlp_trainer.py`          | Completo  | Crear, entrenar, evaluar_fitness, curva de perdida    |
-| `metrics.py`              | Completo  | Accuracy, F1, matriz de confusion                     |
-| `visualizer.py`           | Completo  | Graficas de evolucion y tendencia central             |
-| `wolf.py`                 | Pendiente | Representacion del individuo (vector de hiperparametros) |
-| `ga.py`                   | Pendiente | Operadores geneticos (cruce, mutacion, seleccion)     |
-| `gwo.py`                  | Pendiente | Grey Wolf Optimizer                                   |
-| `hybrid_optimizer.py`     | Pendiente | Orquestacion del hibrido GWO-GA                       |
-| `main.py`                 | Pendiente | Pipeline principal                                    |
+| Modulo                                    | Estado    | Descripcion                                           |
+|-------------------------------------------|-----------|-------------------------------------------------------|
+| `analisis_exploratorio.py`                | Completo  | EDA con 4 graficas exportadas                         |
+| `preprocessing.py`                        | Completo  | Carga, limpieza y normalizacion                       |
+| `split_data.py`                           | Completo  | Split estratificado 70/15/15 reproducible             |
+| `mlp_trainer.py`                          | Completo  | Crear, entrenar, evaluar_fitness, curva de perdida    |
+| `metrics.py`                              | Completo  | Accuracy, F1, matriz de confusion                     |
+| `visualizer.py`                           | Completo  | Graficas de evolucion y tendencia central             |
+| `metaheuristicos/wolf.py`                 | Completo  | Representacion del individuo (vector de hiperparametros) |
+| `metaheuristicos/ga.py`                   | Pendiente | Operadores geneticos (cruce, mutacion, seleccion)     |
+| `metaheuristicos/gwo.py`                  | Pendiente | Grey Wolf Optimizer                                   |
+| `metaheuristicos/hybrid_optimizer.py`     | Pendiente | Orquestacion del hibrido GWO-GA                       |
+| `main.py`                                 | Parcial   | Pipeline principal (falta etapa de optimizacion)      |
 
 ## Configuracion rapida
 

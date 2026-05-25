@@ -2,7 +2,10 @@ import os
 import sys
 
 # Asegura que los imports relativos funcionen desde cualquier CWD
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_SRC = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _SRC)
+sys.path.insert(0, os.path.join(_SRC, "metaheuristicos"))
+
 
 from analisis_exploratorio import (
     cargar_datos,
