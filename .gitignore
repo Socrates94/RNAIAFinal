@@ -163,5 +163,8 @@ resultados/*
 !setup_db.sql
 !examen_redes_neuronales.sql
 
+# Graficas generadas automaticamente
+Graficas/EDA/
+
 # Estilo y Protocolo
 GEMINI.md

@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 
-RANDOM_STATE = 42
+RANDOM_STATE = 17
 
 def split_data(X, y):
     """

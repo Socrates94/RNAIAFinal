@@ -6,7 +6,7 @@ RUTA_CSV = os.path.join("DryBeanDataset", "Dry_Bean_Dataset.csv")
 
 FEATURES = [
     "Area", "Perimeter", "MajorAxisLength", "MinorAxisLength",
-    "AspectRation", "Eccentricity", "ConvexArea", "EquivDiameter",
+    "AspectRation", "Eccentricity", "ConvexArea", "EquivDiameter",  # nombre original UCI (typo del dataset)
     "Extent", "Solidity", "roundness", "Compactness",
     "ShapeFactor1", "ShapeFactor2", "ShapeFactor3", "ShapeFactor4",
 ]
@@ -25,6 +25,7 @@ def preprocesar(df):
     Returns:
         X (ndarray): features normalizadas.
         y (ndarray): etiquetas codificadas como enteros.
+        scaler (StandardScaler): para transformar datos nuevos.
         le (LabelEncoder): para decodificar predicciones.
     """
     X_raw = df[FEATURES].values
@@ -39,4 +40,4 @@ def preprocesar(df):
     print(f"[INFO] Clases: {list(le.classes_)}")
     print(f"[INFO] Shape X: {X.shape}, Shape y: {y.shape}")
 
-    return X, y, le
+    return X, y, scaler, le  
