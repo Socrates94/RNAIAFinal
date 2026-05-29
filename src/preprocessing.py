@@ -2,11 +2,12 @@ import os
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
-RUTA_CSV = os.path.join("DryBeanDataset", "Dry_Bean_Dataset.csv")
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RUTA_CSV  = os.path.join(BASE_DIR, "DryBeanDataset", "Dry_Bean_Dataset.csv")
 
 FEATURES = [
     "Area", "Perimeter", "MajorAxisLength", "MinorAxisLength",
-    "AspectRation", "Eccentricity", "ConvexArea", "EquivDiameter",  # nombre original UCI (typo del dataset)
+    "AspectRation", "Eccentricity", "ConvexArea", "EquivDiameter", 
     "Extent", "Solidity", "roundness", "Compactness",
     "ShapeFactor1", "ShapeFactor2", "ShapeFactor3", "ShapeFactor4",
 ]
@@ -41,3 +42,6 @@ def preprocesar(df):
     print(f"[INFO] Shape X: {X.shape}, Shape y: {y.shape}")
 
     return X, y, scaler, le  
+
+
+    

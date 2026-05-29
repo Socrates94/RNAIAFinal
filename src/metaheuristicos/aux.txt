@@ -1,0 +1,78 @@
+│  FUNCIÓN FUNCIÓN_EVALUAR(individuo, X_train, y_train, X_val, y_val)     │
+
+  // Decodificar el individuo a diccionario de hiper-parámetros
+  params ← DECODIFICAR_INDIVIDUO(individuo)
+  
+  // Construir hidden_layer_sizes
+  SI params.n_neuronas_capa2 == 0:
+      capas ← [params.n_neuronas_capa1]
+  SINO:
+      capas ← [params.n_neuronas_capa1, params.n_neuronas_capa2]
+  FIN SI
+  
+  // Crear y entrenar el MLPClassifier
+  modelo ← MLPClassifier(
+      hidden_layer_sizes = capas,
+      activation         = params.activacion,
+      solver             = params.solver,
+      alpha              = params.alpha,
+      learning_rate_init = params.learning_rate_init,
+      batch_size         = params.batch_size,
+      max_iter           = params.max_iter,
+      early_stopping      = False,         // El fitness ya lo controla el split externo
+      random_state        = 42
+  )
+  
+  modelo.entrenar(X_train, y_train)
+  
+  // Calcular fitness en validación
+  fitness ← modelo.score(X_val, y_val)   // Accuracy
+  
+  RETORNAR fitness
+
+
+FUNCIÓN TORNEO_BINARIO(Poblacion)                                       
+
+i ← aleatorio(0, N-1)
+j ← aleatorio(0, N-1)
+// Garantizar que el torneo no compare un individuo consigo mismo
+MIENTRAS i == j:
+    j ← aleatorio(0, N-1)
+FIN MIENTRAS
+SI Poblacion[i].fitness > Poblacion[j].fitness:
+    RETORNAR Poblacion[i]
+SINO:
+    RETORNAR Poblacion[j]
+
+
+FUNCIÓN CRUCE_UNIFORME(Padre1, Padre2)                                  
+
+PARA cada gen k:
+    SI aleatorio(0,1) < 0.5:
+        Hijo1.gen[k] ← Padre1.gen[k]
+        Hijo2.gen[k] ← Padre2.gen[k]
+    SINO:
+        Hijo1.gen[k] ← Padre2.gen[k]
+        Hijo2.gen[k] ← Padre1.gen[k]
+    FIN PARA
+RETORNAR Hijo1, Hijo2
+
+
+FUNCIÓN MUTAR(Individuo, ProbMutacion, LimitesInf, LimitesSup)          
+
+PARA cada gen k:
+    SI aleatorio(0,1) < ProbMutacion:
+        SI gen k es continuo:
+            // Mutacion gaussiana
+            delta ← GAUSSIANO(media=0, desviacion=(LimitesSup[k]-LimitesInf[k])*0.1)
+            Individuo.gen[k] ← Individuo.gen[k] + delta
+            // AJUSTAR al rango [LimitesInf[k], LimitesSup[k]]
+        FIN SI
+        SI gen k es entero:
+            Individuo.gen[k] ← entero aleatorio entre LimitesInf[k] y LimitesSup[k]
+        FIN SI
+        SI gen k es categorico:
+            Individuo.gen[k] ← categoria aleatoria entre las opciones
+        FIN SI
+    FIN SI
+FIN PARA

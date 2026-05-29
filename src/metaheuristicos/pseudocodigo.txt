@@ -1,0 +1,195 @@
+ALGORITMO HÍBRIDO: AG + GWO PARA OPTIMIZACIÓN DE HIPER-PARÁMETROS
+DE UNA RED NEURONAL MLP
+
+ENTRADA:
+    X_train, y_train        // Datos de entrenamiento
+    X_val, y_val            // Datos de validación
+    N                       // Tamaño de la población de lobos
+    MaxIter                 // Número máximo de iteraciones
+    ProbCruce               // Probabilidad de cruce genético
+    ProbMutacion            // Probabilidad de mutación genética
+    LimitesInferiores       // Límites inferiores de cada hiper-parámetro
+    LimitesSuperiores       // Límites superiores de cada hiper-parámetro
+
+SALIDA:
+    Alpha                   // Mejor solución encontrada (mejores hiper-parámetros)
+    HistorialFitness        // Registro de evolución para análisis estadístico
+
+
+
+FASE 0: DEFINICIÓN DEL INDIVIDUO (LOBO)
+
+INDIVIDUO = {
+    // Arquitectura de la red
+    n_neuronas_capa1       ∈ [10, 200]        // Entero
+    n_neuronas_capa2       ∈ [0, 200]         // Entero (0 = sin segunda capa)
+    
+    // Función de activación
+    activacion             ∈ {0, 1, 2}        // 0='relu', 1='tanh', 2='logistic'
+    
+    // Optimizador
+    solver                 ∈ {0, 1}           // 0='adam', 1='sgd'
+    
+    // Regularización
+    alpha                  ∈ [0.0001, 0.1]    // Continuo (escala logarítmica)
+    
+    // Aprendizaje
+    learning_rate_init     ∈ [0.0001, 0.1]    // Continuo (escala logarítmica)
+    batch_size             ∈ [16, 256]        // Entero (potencias de 2)
+    max_iter               ∈ [100, 500]       // Entero
+}
+
+
+FASE 1: INICIALIZACIÓN
+
+  Crear población Poblacion[0..N-1] de N lobos
+  PARA cada lobo i DESDE 0 HASTA N-1:
+      PARA cada gen j del lobo:
+          SI el gen es continuo:
+              Poblacion[i].gen[j] ← valor aleatorio entre LimiteInf[j] y LimiteSup[j]
+          SI el gen es entero:
+              Poblacion[i].gen[j] ← entero aleatorio entre LimiteInf[j] y LimiteSup[j]
+          SI el gen es categórico:
+              Poblacion[i].gen[j] ← categoría aleatoria entre las opciones
+    
+      // Evaluar aptitud del lobo
+      Poblacion[i].fitness ← FUNCIÓN_EVALUAR(Poblacion[i], X_train, y_train, X_val, y_val)
+  FIN PARA
+  
+  // Ordenar población por fitness (mayor = mejor)
+  ORDENAR Poblacion POR fitness DESCENDENTE
+  
+  // Asignar jerarquía GWO
+  Alpha   ← Poblacion[0]    // Mejor solución
+  Beta    ← Poblacion[1]    // Segunda mejor
+  Delta   ← Poblacion[2]    // Tercera mejor
+  
+  Inicializar HistorialFitness como lista vacía
+
+
+FASE 2: CICLO PRINCIPAL HÍBRIDO
+
+  PARA iter ← 1 HASTA MaxIter:
+    
+      // Actualizar coeficiente 'a' al inicio de cada iteracion (decrece de 2 a 0)
+      a ← 2 - 2 * (iter / MaxIter)
+    
+      // ─── BLOQUE GENÉTICO (AG): EXPLORACIÓN GLOBAL ───
+      // Aplicado a TODA la población
+    
+      NuevaPoblacion ← lista vacía
+    
+      // Conservar élite (los 3 mejores pasan directo)
+      AGREGAR Alpha, Beta, Delta a NuevaPoblacion
+    
+      MIENTRAS |NuevaPoblacion| < N:
+    
+          // SELECCIÓN: Torneo binario
+          Padre1 ← TORNEO_BINARIO(Poblacion)
+          Padre2 ← TORNEO_BINARIO(Poblacion)
+        
+          // CRUCE: Cruce uniforme con probabilidad ProbCruce
+          SI aleatorio(0,1) < ProbCruce:
+              Hijo1, Hijo2 ← CRUCE_UNIFORME(Padre1, Padre2)
+          SINO:
+              Hijo1 ← copia de Padre1
+              Hijo2 ← copia de Padre2
+
+          FIN SI
+        
+          // MUTACIÓN: con probabilidad ProbMutacion por gen
+          MUTAR(Hijo1, ProbMutacion, LimitesInf, LimitesSup)
+          MUTAR(Hijo2, ProbMutacion, LimitesInf, LimitesSup)
+        
+          // Evaluar hijos
+          Hijo1.fitness ← FUNCIÓN_EVALUAR(Hijo1, X_train, y_train, X_val, y_val)
+          Hijo2.fitness ← FUNCIÓN_EVALUAR(Hijo2, X_train, y_train, X_val, y_val)
+        
+          AGREGAR Hijo1, Hijo2 a NuevaPoblacion
+
+      FIN MIENTRAS
+    
+      // Recortar si N es impar y se agregó un individuo de mas
+      SI |NuevaPoblacion| > N:
+          NuevaPoblacion ← NuevaPoblacion[0..N-1]
+      FIN SI
+    
+      // Reemplazar población antigua
+      Poblacion ← NuevaPoblacion
+    
+      // ─── BLOQUE GWO: EXPLOTACIÓN LOCAL ───
+      // Aplicado SOLO a los lobos Omega (excluyendo Alpha, Beta, Delta)
+    
+      PARA cada lobo Omega EN Poblacion (índices 3 hasta N-1):
+        
+          PARA cada gen j del lobo:
+            
+              // Calcular vectores A y C para Alpha
+              r1 ← aleatorio(0, 1)
+              r2 ← aleatorio(0, 1)
+              A1 ← 2 * a * r1 - a
+              C1 ← 2 * r2
+            
+              // Calcular distancia a Alpha
+              D_alpha ← |C1 * Alpha.gen[j] - Omega.gen[j]|
+              X1 ← Alpha.gen[j] - A1 * D_alpha
+            
+              // Repetir para Beta
+              r1 ← aleatorio(0, 1)
+              r2 ← aleatorio(0, 1)
+              A2 ← 2 * a * r1 - a
+              C2 ← 2 * r2
+              D_beta ← |C2 * Beta.gen[j] - Omega.gen[j]|
+              X2 ← Beta.gen[j] - A2 * D_beta
+            
+              // Repetir para Delta
+              r1 ← aleatorio(0, 1)
+              r2 ← aleatorio(0, 1)
+              A3 ← 2 * a * r1 - a
+              C3 ← 2 * r2
+              D_delta ← |C3 * Delta.gen[j] - Omega.gen[j]|
+              X3 ← Delta.gen[j] - A3 * D_delta
+            
+              // Nueva posición del gen = promedio de las tres estimaciones
+              Omega.gen[j] ← (X1 + X2 + X3) / 3
+            
+              // Ajustar al rango permitido
+              SI Omega.gen[j] < LimitesInf[j]:
+                  Omega.gen[j] ← LimitesInf[j]
+              SI Omega.gen[j] > LimitesSup[j]:
+                  Omega.gen[j] ← LimitesSup[j]
+            
+              // Redondear si es gen entero
+              SI el gen j es de tipo entero:
+                  Omega.gen[j] ← REDONDEAR(Omega.gen[j])
+              // Redondear a categoría si es categórico
+              SI el gen j es categórico:
+                  Omega.gen[j] ← ENTERO_MAS_CERCANO(Omega.gen[j]) MOD opciones[j]
+          FIN PARA
+        
+          // Re-evaluar aptitud del lobo Omega modificado
+          Omega.fitness ← FUNCIÓN_EVALUAR(Omega, X_train, y_train, X_val, y_val)
+      FIN PARA
+    
+      // ─── ACTUALIZAR JERARQUÍA ───
+      ORDENAR Poblacion POR fitness DESCENDENTE
+      Alpha ← Poblacion[0]
+      Beta  ← Poblacion[1]
+      Delta ← Poblacion[2]
+    
+      // ─── REGISTRAR ESTADÍSTICAS (Punto 4 del examen) ───
+      mejor_fitness  ← Alpha.fitness
+      peor_fitness   ← Poblacion[N-1].fitness
+      media_fitness  ← MEDIA de fitness de toda la población
+      mediana_fitness ← MEDIANA de fitness de toda la población
+      desviacion_fitness ← DESVIACIÓN ESTÁNDAR de fitness
+      AGREGAR {iter, mejor_fitness, peor_fitness, media_fitness, 
+              mediana_fitness, desviacion_fitness, a, N} 
+      a HistorialFitness
+    
+    FIN PARA
+
+
+ FASE 3: RETORNAR RESULTADOS 
+
+RETORNAR Alpha, HistorialFitness

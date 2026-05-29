@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -10,27 +9,28 @@ from sklearn.metrics import (
     confusion_matrix,
 )
 
+
 def evaluar(modelo, X_test, y_test, nombres_clases):
     """
     Evalúa el modelo sobre el conjunto de test y reporta métricas completas.
 
     Args:
         modelo: MLPClassifier entrenado.
-        X_test (ndarray): features de test.
-        y_test (ndarray): etiquetas reales.
-        nombres_clases (list): nombres legibles de cada clase.
+        X_test (ndarray): Features de test.
+        y_test (ndarray): Etiquetas reales (codificadas como enteros).
+        nombres_clases (list): Nombres legibles de cada clase.
 
     Returns:
-        dict con accuracy, f1_macro y f1_weighted.
+        dict: Diccionario con accuracy, f1_macro y f1_weighted.
     """
     y_pred = modelo.predict(X_test)
 
-    acc        = accuracy_score(y_test, y_pred)
-    f1_macro   = f1_score(y_test, y_pred, average="macro")
+    acc = accuracy_score(y_test, y_pred)
+    f1_macro = f1_score(y_test, y_pred, average="macro")
     f1_weighted = f1_score(y_test, y_pred, average="weighted")
 
     print("=" * 60)
-    print("[METRICAS] Resultados sobre conjunto de test")
+    print("[MÉTRICAS] Resultados sobre conjunto de test")
     print("=" * 60)
     print(f"  Accuracy:    {acc:.4f}")
     print(f"  F1 Macro:    {f1_macro:.4f}")
@@ -38,11 +38,24 @@ def evaluar(modelo, X_test, y_test, nombres_clases):
     print()
     print(classification_report(y_test, y_pred, target_names=nombres_clases))
 
-    return {"accuracy": acc, "f1_macro": f1_macro, "f1_weighted": f1_weighted}
+    return {
+        "accuracy": acc,
+        "f1_macro": f1_macro,
+        "f1_weighted": f1_weighted
+    }
 
 
 def graficar_confusion(modelo, X_test, y_test, nombres_clases, ruta_salida):
-    """Genera y guarda la matriz de confusión como heatmap."""
+    """
+    Genera y guarda la matriz de confusión como heatmap.
+
+    Args:
+        modelo: MLPClassifier entrenado.
+        X_test (ndarray): Features de test.
+        y_test (ndarray): Etiquetas reales.
+        nombres_clases (list): Nombres legibles de cada clase.
+        ruta_salida (str): Ruta donde guardar la gráfica.
+    """
     y_pred = modelo.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
 
@@ -58,10 +71,11 @@ def graficar_confusion(modelo, X_test, y_test, nombres_clases, ruta_salida):
         yticklabels=nombres_clases,
         ax=ax
     )
-    ax.set_title("Matriz de confusion — Dry Bean Dataset")
+    ax.set_title("Matriz de confusión — Dry Bean Dataset", fontsize=13)
     ax.set_xlabel("Clase predicha")
     ax.set_ylabel("Clase real")
     plt.tight_layout()
-    fig.savefig(ruta_salida)
+    fig.savefig(ruta_salida, dpi=150)
     plt.close()
-    print(f"[INFO] Matriz de confusion guardada en: {ruta_salida}")
+
+    print(f"[INFO] Matriz de confusión guardada en: {ruta_salida}")
