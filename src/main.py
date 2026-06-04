@@ -6,6 +6,8 @@ _SRC = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _SRC)
 sys.path.insert(0, os.path.join(_SRC, "metaheuristicos"))
 
+from hybrid_optimizer import optimizar
+
 from analisis_exploratorio import (
     cargar_datos,
     informacion_general,
@@ -17,7 +19,7 @@ from analisis_exploratorio import (
 )
 from preprocessing import preprocesar
 from split_data import split_data
-from mlp_trainer import entrenar, evaluar_final, graficar_perdida
+from mlp_trainer import evaluar_final, graficar_perdida
 from metrics import evaluar, graficar_confusion
 from visualizer import (
     graficar_evolucion_fitness,
@@ -34,7 +36,7 @@ ETAPAS = {
     "eda":           False,  # Correr aparte con: python src/analisis_exploratorio.py
     "preprocessing": True,
     "split":         True,
-    "optimizacion":  True,   # Usa hiperparametros por defecto mientras no hay metaheuristicos
+    "optimizacion":  True,   # Híbrido AG + GWO
     "entrenamiento": True,
     "evaluacion":    True,
 }
@@ -82,33 +84,23 @@ def etapa_split(X, y):
 
 def etapa_optimizacion(X_train, y_train, X_val, y_val):
     """
-    Stub — se implementa cuando metaheuristicos/ este listo.
-    Retorna los mejores hiperparametros y los historiales de fitness
-    para las graficas de convergencia.
+    Ejecuta el optimizador híbrido AG+GWO para encontrar los mejores
+    hiper-parámetros del MLPClassifier sobre el Dry Bean Dataset.
     """
     print("\n" + "=" * 60)
-    print("ETAPA 4 — Optimizacion hibrida GWO-GA (PENDIENTE)")
+    print("ETAPA 4 — Optimizacion hibrida AG + GWO")
     print("=" * 60)
-    print("[WARN] Etapa no implementada. Usando hiperparametros por defecto.")
 
-    mejores_hiperparametros = {
-        "hidden_layer_sizes": (100, 50),
-        "activation":         "relu",
-        "solver":             "adam",
-        "alpha":              1e-4,
-        "learning_rate_init": 1e-3,
-        "batch_size":         32,
-        "max_iter":           300,
-        "early_stopping":     True,
-        "validation_fraction": 0.1,
-        "random_state":       42,
-        "verbose":            False,
-    }
-    historial_mejor     = []
-    historial_poblacion = []
-    historial_a         = []
+    mejores_hp, historial_mejor, historial_poblacion, historial_a = optimizar(
+        X_train, y_train, X_val, y_val,
+        N=20,
+        MAX_ITER=30,
+        prob_cruce=0.8,
+        prob_mutacion=0.15,
+        verbose=True,
+    )
 
-    return mejores_hiperparametros, historial_mejor, historial_poblacion, historial_a
+    return mejores_hp, historial_mejor, historial_poblacion, historial_a
 
 
 def etapa_entrenamiento(mejores_hiperparametros, X_train, y_train, X_test, y_test):

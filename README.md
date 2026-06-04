@@ -1,19 +1,23 @@
 # Proyecto IA — Clasificacion de Variedades de Frijol (Dry Bean Dataset)
 
 Clasificacion de 7 variedades de frijol seco usando un MLPClassifier de scikit-learn sobre el
-Dry Bean Dataset (UCI). El objetivo final es optimizar los hiperparametros de la red mediante un
-algoritmo hibrido GWO-GA; esta etapa aun esta en desarrollo.
+Dry Bean Dataset (UCI). El objetivo se logró exitosamente optimizando los hiperparametros de la red
+mediante un algoritmo hibrido GWO-GA acelerado con procesamiento en paralelo.
 
 ## Estructura del proyecto
 
 ```
 IA/
 ├── DryBeanDataset/
-│   └── Dry_Bean_Dataset.csv          # 13 611 muestras, 17 columnas
+│   ├── Dry_Bean_Dataset.csv          # 13 611 muestras, 17 columnas
+│   └── split/                        # Datos divididos y exportados
+│       ├── train.csv                 # 70% (Entrenamiento)
+│       ├── val.csv                   # 15% (Validación/Fitness)
+│       └── test.csv                  # 15% (Evaluación Final)
 │
 ├── Graficas/
 │   ├── EDA/                          # Graficas del analisis exploratorio (no versionadas)
-│   └── Resultados/                   # Graficas del optimizador — pendiente
+│   └── Resultados/                   # Graficas de matrices de confusion y convergencia GWO-GA
 │
 ├── src/
 │   ├── main.py                       # Orquestador del pipeline completo
@@ -23,14 +27,14 @@ IA/
 │   ├── mlp_trainer.py                # MLPClassifier: crear, entrenar, evaluar_fitness
 │   ├── metrics.py                    # Accuracy, F1-macro, F1-weighted, matriz de confusion
 │   ├── visualizer.py                 # Graficas de evolucion → Graficas/Resultados/
-│   └── metaheuristicos/              # Subpaquete pendiente de implementacion
+│   └── metaheuristicos/              # Módulo del optimizador híbrido GWO-GA
 │       ├── __init__.py
 │       ├── wolf.py                   # Representacion del individuo (vector de hiperparametros)
-│       ├── ga.py                     # Pendiente: operadores geneticos
-│       ├── gwo.py                    # Pendiente: Grey Wolf Optimizer
-│       ├── hybrid_optimizer.py       # Pendiente: orquestacion hibrida GWO-GA
-│       ├── pseudocodigo.txt          # Pseudocodigo del algoritmo hibrido
-│       └── aux.txt                   # Funciones auxiliares del pseudocodigo
+│       ├── ga.py                     # Operadores geneticos (selección, cruce, mutación)
+│       ├── gwo.py                    # Grey Wolf Optimizer (Alpha, Beta, Delta)
+│       ├── paralelizador.py          # Procesamiento multi-core de fitness via joblib
+│       ├── hiperparametros.py        # Definición estricta de límites (Bounds) y decodificador
+│       └── hybrid_optimizer.py       # Orquestacion y pipeline principal del hibrido
 │
 ├── requirements.txt
 ├── .gitignore
@@ -54,20 +58,28 @@ main.py
   └─ 5 ─► metrics.py                 →  reporte final sobre X_test (accuracy, F1, confusion matrix)
 ```
 
-## Flujo completo (con metaheuristicos — pendiente)
+## Flujo completo (con metaheuristicos)
 
 ```
 main.py
   │
-  ├─ 1-3 ─► (igual que arriba)
+  ├─ 1-3 ─► Etapas de Preprocesamiento y Split (descritas arriba)
   │
-  ├─ 4 ─► metaheuristicos/
-  │           ├── hybrid_optimizer.py →  busca mejores hiperparametros via GWO-GA
-  │           └── mlp_trainer.evaluar_fitness()  ← fitness = accuracy en X_val
+  ├─ 4 ─► metaheuristicos/hybrid_optimizer.py
+  │           │
+  │           ├─► wolf.py             → Genera N lobos iniciales (vectores de hiperparámetros)
+  │           ├─► paralelizador.py    → Evalúa el fitness inicial en paralelo (multi-core)
+  │           │
+  │           ├─► [Bucle MAX_ITER]
+  │           │     ├─► ga.py         → Aplica Selección por Torneo, Cruce Uniforme y Mutación
+  │           │     ├─► gwo.py        → Recalcula distancia y mueve a Omegas hacia Alpha, Beta y Delta
+  │           │     └─► paralelizador → Evalúa el nuevo fitness de la manada tras moverse
+  │           │
+  │           └─► Retorna el Lobo Alpha (mejor hiperparámetro encontrado)
   │
-  ├─ 5 ─► mlp_trainer.entrenar()     ←  entrena con X_train y los hiperparametros optimos
-  ├─ 6 ─► metrics.evaluar()          →  reporte final sobre X_test (sellado)
-  └─ 7 ─► visualizer.py              →  curvas de evolucion del optimizador
+  ├─ 5 ─► mlp_trainer.entrenar()      ← Entrena la red final con X_train usando los genes del Alpha
+  ├─ 6 ─► metrics.evaluar()           → Valida el modelo contra X_test (datos sellados no vistos)
+  └─ 7 ─► visualizer.py               → Genera matriz de confusión y curvas de evolución en Graficas/
 ```
 
 ## Flujo interno del optimizador hibrido GWO-GA
@@ -178,15 +190,17 @@ y evaluar sobre X_test (que permanece sellado durante toda la optimizacion)
 |---------------------------------------|-----------|----------------------------------------------------------|
 | `analisis_exploratorio.py`            | Completo  | EDA con 4 graficas exportadas                            |
 | `preprocessing.py`                    | Completo  | Carga, limpieza, normalizacion y codificacion            |
-| `split_data.py`                       | Completo  | Split estratificado 70/15/15 reproducible                |
+| `split_data.py`                       | Completo  | Split estratificado 70/15/15 exportado a CSV             |
 | `mlp_trainer.py`                      | Completo  | Crear, entrenar, evaluar fitness y curva de perdida      |
 | `metrics.py`                          | Completo  | Accuracy, F1, matriz de confusion                        |
-| `visualizer.py`                       | Completo  | Graficas de evolucion y tendencia central                |
-| `metaheuristicos/wolf.py`             | Completo  | Representacion del individuo como vector de genes        |
-| `metaheuristicos/ga.py`               | Pendiente | Operadores geneticos: cruce, mutacion, seleccion         |
-| `metaheuristicos/gwo.py`              | Pendiente | Grey Wolf Optimizer                                      |
-| `metaheuristicos/hybrid_optimizer.py` | Pendiente | Orquestacion del hibrido GWO-GA                          |
-| `main.py`                             | Parcial   | Pipeline base funcional; falta etapa de optimizacion     |
+| `visualizer.py`                       | Completo  | Graficas de evolucion y convergencia metaheurística      |
+| `metaheuristicos/hiperparametros.py`  | Completo  | Mapeo y límites matemáticos del espacio de búsqueda      |
+| `metaheuristicos/wolf.py`             | Completo  | Genoma del individuo y mutación                          |
+| `metaheuristicos/ga.py`               | Completo  | Algoritmo Genético                                       |
+| `metaheuristicos/gwo.py`              | Completo  | Optimización por inteligencia de enjambre (Lobos)        |
+| `metaheuristicos/paralelizador.py`    | Completo  | Abstracción multi-hilo para evaluación simultánea        |
+| `metaheuristicos/hybrid_optimizer.py` | Completo  | Orquestacion del hibrido GWO-GA                          |
+| `main.py`                             | Completo  | Pipeline base y optimizado 100% funcional                |
 
 ## Configuracion rapida
 

@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+from hiperparametros import gen_aleatorio, clip_gen, decodificar
 
 class Wolf:
     """
@@ -10,25 +11,19 @@ class Wolf:
     def __init__(self):
         """
         Inicializa un lobo con genes aleatorios dentro de los rangos
-        definidos para cada hiper-parámetro del MLPClassifier.
+        definidos en hiperparametros.BOUNDS.
         """
-        # --- Genes continuos (escala logarítmica) ---
-        self.alpha = 10 ** np.random.uniform(-4, -1)       # [1e-4, 1e-1]
-        self.learning_rate_init = 10 ** np.random.uniform(-4, -1)  # [1e-4, 1e-1]
+        self.alpha               = gen_aleatorio("alpha")
+        self.learning_rate_init  = gen_aleatorio("learning_rate_init")
+        self.n_neuronas_capa1    = gen_aleatorio("n_neuronas_capa1")
+        self.n_neuronas_capa2    = gen_aleatorio("n_neuronas_capa2")
+        self.batch_size          = gen_aleatorio("batch_size")
+        self.max_iter            = gen_aleatorio("max_iter")
+        self.activacion          = gen_aleatorio("activacion")
+        self.solver              = gen_aleatorio("solver")
 
-        # --- Genes enteros ---
-        self.n_neuronas_capa1 = np.random.randint(10, 201)     # [10, 200]
-        self.n_neuronas_capa2 = np.random.randint(0, 201)      # [0, 200]  (0 = sin 2da capa)
-        self.batch_size = np.random.choice([16, 32, 64, 128, 256])  # Potencias de 2
-        self.max_iter = np.random.randint(100, 501)            # [100, 500]
-
-        # --- Genes categóricos ---
-        self.activacion = np.random.choice([0, 1, 2])  # 0=relu, 1=tanh, 2=logistic
-        self.solver = np.random.choice([0, 1])          # 0=adam, 1=sgd
-
-        # --- Metadatos ---
-        self.fitness = 0.0       # Accuracy en validación (0.0 a 1.0)
-        self.role = "omega"      # alpha, beta, delta, omega
+        self.fitness = 0.0
+        self.role    = "omega"
 
     # ─────────────────────────────────────────────────────────────
     #  MÉTODOS PARA EL MLPClassifier
@@ -37,34 +32,12 @@ class Wolf:
     def to_dict(self):
         """
         Convierte los genes del lobo a un diccionario listo para
-        pasarse como argumentos al MLPClassifier de sklearn.
+        MLPClassifier. Delega a hiperparametros.decodificar().
 
         Returns:
-            dict: Diccionario con nombres de hiper-parámetros del MLP.
+            dict: Hiper-parámetros para MLPClassifier.
         """
-        # Mapeo de categóricos a strings
-        mapa_activacion = {0: "relu", 1: "tanh", 2: "logistic"}
-        mapa_solver = {0: "adam", 1: "sgd"}
-
-        # Construir hidden_layer_sizes
-        if self.n_neuronas_capa2 == 0:
-            capas = (self.n_neuronas_capa1,)
-        else:
-            capas = (self.n_neuronas_capa1, self.n_neuronas_capa2)
-
-        return {
-            "hidden_layer_sizes": capas,
-            "activation": mapa_activacion[self.activacion],
-            "solver": mapa_solver[self.solver],
-            "alpha": self.alpha,
-            "learning_rate_init": self.learning_rate_init,
-            "batch_size": int(self.batch_size),
-            "max_iter": int(self.max_iter),
-            "early_stopping": True,
-            "validation_fraction": 0.1,
-            "random_state": 42,
-            "verbose": False
-        }
+        return decodificar(self)
 
     # ─────────────────────────────────────────────────────────────
     #  MÉTODOS PARA EL ALGORITMO GENÉTICO (AG)
@@ -121,17 +94,19 @@ class Wolf:
     # ─────────────────────────────────────────────────────────────
 
     def clip_bounds(self):
-        """Asegura que todos los genes estén dentro de sus rangos permitidos."""
-        self.alpha = np.clip(self.alpha, 1e-4, 1e-1)
-        self.learning_rate_init = np.clip(self.learning_rate_init, 1e-4, 1e-1)
-        self.n_neuronas_capa1 = int(np.clip(self.n_neuronas_capa1, 10, 200))
-        self.n_neuronas_capa2 = int(np.clip(self.n_neuronas_capa2, 0, 200))
-        # Snap al valor válido más cercano — GWO puede producir valores intermedios
-        _opciones_batch = np.array([16, 32, 64, 128, 256])
-        self.batch_size = int(_opciones_batch[np.argmin(np.abs(_opciones_batch - self.batch_size))])
-        self.max_iter = int(np.clip(self.max_iter, 100, 500))
-        self.activacion = int(np.clip(self.activacion, 0, 2))
-        self.solver = int(np.clip(self.solver, 0, 1))
+        """
+        Ajusta todos los genes a sus rangos válidos.
+        Delega a hiperparametros.clip_gen() para mantener
+        la lógica de bounds en un solo lugar.
+        """
+        self.alpha              = clip_gen("alpha",              self.alpha)
+        self.learning_rate_init = clip_gen("learning_rate_init", self.learning_rate_init)
+        self.n_neuronas_capa1   = clip_gen("n_neuronas_capa1",   self.n_neuronas_capa1)
+        self.n_neuronas_capa2   = clip_gen("n_neuronas_capa2",   self.n_neuronas_capa2)
+        self.batch_size         = clip_gen("batch_size",         self.batch_size)
+        self.max_iter           = clip_gen("max_iter",           self.max_iter)
+        self.activacion         = clip_gen("activacion",         self.activacion)
+        self.solver             = clip_gen("solver",             self.solver)
 
     def update_position_gwo(self, alpha_pos, beta_pos, delta_pos, a):
         """

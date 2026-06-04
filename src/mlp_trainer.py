@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPClassifier
+from hiperparametros import decodificar
 
 
 def crear_modelo(hidden_layer_sizes=(100, 50),
@@ -12,7 +13,7 @@ def crear_modelo(hidden_layer_sizes=(100, 50),
                  max_iter=300,
                  early_stopping=True,
                  validation_fraction=0.1,
-                 random_state=42,
+                 random_state=17,
                  verbose=False):
     """
     Instancia un MLPClassifier con los hiper-parámetros dados.
@@ -93,11 +94,8 @@ def evaluar_fitness(wolf, X_train, y_train, X_val, y_val):
     Returns:
         float: Accuracy en validación (entre 0.0 y 1.0).
     """
-    hiperparametros = wolf.to_dict()
-    # Desactivar early_stopping interno: ya tenemos X_val externo para medir fitness.
-    # Activarlo aqui recortaria X_train innecesariamente.
-    hiperparametros["early_stopping"] = False
-    hiperparametros.pop("validation_fraction", None)
+    # decodificar() ya retorna early_stopping=False y sin validation_fraction
+    hiperparametros = decodificar(wolf)
     modelo = crear_modelo(**hiperparametros)
     modelo.fit(X_train, y_train)
     fitness = modelo.score(X_val, y_val)

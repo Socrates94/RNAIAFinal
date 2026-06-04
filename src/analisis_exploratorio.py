@@ -3,9 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-BASE_DIR      = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RUTA_CSV      = os.path.join(BASE_DIR, "DryBeanDataset", "Dry_Bean_Dataset.csv")
-RUTA_GRAFICAS = os.path.join(BASE_DIR, "Graficas", "EDA")
+BASE_DIR      = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Obtiene la ruta del directorio padre del archivo actual
+RUTA_CSV      = os.path.join(BASE_DIR, "DryBeanDataset", "Dry_Bean_Dataset.csv") # Obtiene la ruta del archivo CSV
+RUTA_GRAFICAS = os.path.join(BASE_DIR, "Graficas", "EDA") # Obtiene la ruta de la carpeta de graficas
 
 
 def cargar_datos(ruta):
