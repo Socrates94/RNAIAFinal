@@ -17,7 +17,19 @@ IA/
 │
 ├── Graficas/
 │   ├── EDA/                          # Graficas del analisis exploratorio (no versionadas)
+│   │   ├── boxplots_por_clase.png
+│   │   ├── distribucion_clases.png
+│   │   ├── heatmap_correlacion.png
+│   │   └── histogramas_features.png
+│   │
 │   └── Resultados/                   # Graficas de matrices de confusion y convergencia GWO-GA
+│       ├── coeficiente_a.png
+│       ├── curva_perdida.png
+│       ├── curva_perdida_baseline.png
+│       ├── evolucion_fitness.png
+│       ├── matriz_confusion.png
+│       ├── matriz_confusion_baseline.png
+│       └── tendencia_central.png
 │
 ├── src/
 │   ├── main.py                       # Orquestador del pipeline completo
@@ -87,16 +99,16 @@ main.py
 El optimizador recibe `X_train`, `X_val`, `y_train`, `y_val` y una poblacion de `N` lobos.
 Cada lobo es un vector de 8 genes que representan los hiperparametros del MLP:
 
-| Gen                  | Tipo       | Rango           |
-|----------------------|------------|-----------------|
-| `n_neuronas_capa1`   | Entero     | [10, 200]       |
-| `n_neuronas_capa2`   | Entero     | [0, 200]        |
+| Gen                    | Tipo       | Rango              |
+| ---------------------- | ---------- | ------------------ |
+| `n_neuronas_capa1`   | Entero     | [10, 200]          |
+| `n_neuronas_capa2`   | Entero     | [0, 200]           |
 | `activacion`         | Categorico | relu/tanh/logistic |
-| `solver`             | Categorico | adam/sgd        |
-| `alpha`              | Continuo   | [0.0001, 0.1]   |
-| `learning_rate_init` | Continuo   | [0.0001, 0.1]   |
-| `batch_size`         | Entero     | [16, 256]       |
-| `max_iter`           | Entero     | [100, 500]      |
+| `solver`             | Categorico | adam/sgd           |
+| `alpha`              | Continuo   | [0.0001, 0.1]      |
+| `learning_rate_init` | Continuo   | [0.0001, 0.1]      |
+| `batch_size`         | Entero     | [16, 256]          |
+| `max_iter`           | Entero     | [100, 500]         |
 
 ### Fase 1 — Inicializacion
 
@@ -175,32 +187,32 @@ y evaluar sobre X_test (que permanece sellado durante toda la optimizacion)
 
 ## Dataset
 
-| Propiedad    | Detalle                                                        |
-|--------------|----------------------------------------------------------------|
-| Fuente       | UCI Machine Learning Repository                                |
-| Muestras     | 13 611 (sin duplicados)                                        |
-| Features     | 16 morfologicas (area, perimetro, compacidad...)               |
-| Clases       | 7 (BARBUNYA, BOMBAY, CALI, DERMASON, HOROZ, SEKER, SIRA)      |
-| Desbalance   | Leve; DERMASON es la clase mayoritaria                         |
-| Preprocesado | StandardScaler en X, LabelEncoder en y                         |
+| Propiedad    | Detalle                                                  |
+| ------------ | -------------------------------------------------------- |
+| Fuente       | UCI Machine Learning Repository                          |
+| Muestras     | 13 611 originales (13 596 tras remover duplicados en preprocesado) |
+| Features     | 16 morfologicas (area, perimetro, compacidad...)         |
+| Clases       | 7 (BARBUNYA, BOMBAY, CALI, DERMASON, HOROZ, SEKER, SIRA) |
+| Desbalance   | Leve; DERMASON es la clase mayoritaria                   |
+| Preprocesado | StandardScaler en X, LabelEncoder en y                   |
 
 ## Estado de implementacion
 
-| Modulo                                | Estado    | Descripcion                                              |
-|---------------------------------------|-----------|----------------------------------------------------------|
-| `analisis_exploratorio.py`            | Completo  | EDA con 4 graficas exportadas                            |
-| `preprocessing.py`                    | Completo  | Carga, limpieza, normalizacion y codificacion            |
-| `split_data.py`                       | Completo  | Split estratificado 70/15/15 exportado a CSV             |
-| `mlp_trainer.py`                      | Completo  | Crear, entrenar, evaluar fitness y curva de perdida      |
-| `metrics.py`                          | Completo  | Accuracy, F1, matriz de confusion                        |
-| `visualizer.py`                       | Completo  | Graficas de evolucion y convergencia metaheurística      |
-| `metaheuristicos/hiperparametros.py`  | Completo  | Mapeo y límites matemáticos del espacio de búsqueda      |
-| `metaheuristicos/wolf.py`             | Completo  | Genoma del individuo y mutación                          |
-| `metaheuristicos/ga.py`               | Completo  | Algoritmo Genético                                       |
-| `metaheuristicos/gwo.py`              | Completo  | Optimización por inteligencia de enjambre (Lobos)        |
-| `metaheuristicos/paralelizador.py`    | Completo  | Abstracción multi-hilo para evaluación simultánea        |
-| `metaheuristicos/hybrid_optimizer.py` | Completo  | Orquestacion del hibrido GWO-GA                          |
-| `main.py`                             | Completo  | Pipeline base y optimizado 100% funcional                |
+| Modulo                                  | Estado   | Descripcion                                            |
+| --------------------------------------- | -------- | ------------------------------------------------------ |
+| `analisis_exploratorio.py`            | Completo | EDA con 4 graficas exportadas                          |
+| `preprocessing.py`                    | Completo | Carga, limpieza, normalizacion y codificacion          |
+| `split_data.py`                       | Completo | Split estratificado 70/15/15 exportado a CSV           |
+| `mlp_trainer.py`                      | Completo | Crear, entrenar, evaluar fitness y curva de perdida    |
+| `metrics.py`                          | Completo | Accuracy, F1, matriz de confusion                      |
+| `visualizer.py`                       | Completo | Graficas de evolucion y convergencia metaheurística   |
+| `metaheuristicos/hiperparametros.py`  | Completo | Mapeo y límites matemáticos del espacio de búsqueda |
+| `metaheuristicos/wolf.py`             | Completo | Genoma del individuo y mutación                       |
+| `metaheuristicos/ga.py`               | Completo | Algoritmo Genético                                    |
+| `metaheuristicos/gwo.py`              | Completo | Optimización por inteligencia de enjambre (Lobos)     |
+| `metaheuristicos/paralelizador.py`    | Completo | Abstracción multi-hilo para evaluación simultánea   |
+| `metaheuristicos/hybrid_optimizer.py` | Completo | Orquestacion del hibrido GWO-GA                        |
+| `main.py`                             | Completo | Pipeline base y optimizado 100% funcional              |
 
 ## Configuracion rapida
 

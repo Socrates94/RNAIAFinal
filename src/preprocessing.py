@@ -15,7 +15,7 @@ FEATURES = [
 def cargar_datos():
     """Lee el CSV y elimina filas duplicadas."""
     df = pd.read_csv(RUTA_CSV)
-    df = df.drop_duplicates()
+    df = df.drop_duplicates() #deja el dataset con 13596 filas y 16 columnas
     print(f"[INFO] Dataset cargado: {df.shape[0]} filas, {df.shape[1]} columnas")
     return df
 
