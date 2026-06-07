@@ -22,6 +22,7 @@ class Wolf:
         self.activacion          = gen_aleatorio("activacion")
         self.solver              = gen_aleatorio("solver")
 
+        # atributos propios del grey wolf optimizer
         self.fitness = 0.0
         self.role    = "omega"
 

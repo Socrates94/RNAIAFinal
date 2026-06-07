@@ -23,11 +23,11 @@ def evaluar(modelo, X_test, y_test, nombres_clases):
     Returns:
         dict: Diccionario con accuracy, f1_macro y f1_weighted.
     """
-    y_pred = modelo.predict(X_test)
+    y_pred = modelo.predict(X_test) # Predice las etiquetas de test
 
-    acc = accuracy_score(y_test, y_pred)
-    f1_macro = f1_score(y_test, y_pred, average="macro")
-    f1_weighted = f1_score(y_test, y_pred, average="weighted")
+    acc = accuracy_score(y_test, y_pred) # Calcula el accuracy
+    f1_macro = f1_score(y_test, y_pred, average="macro") # Calcula el f1_macro
+    f1_weighted = f1_score(y_test, y_pred, average="weighted") # Calcula el f1_weighted
 
     print("=" * 60)
     print("[MÉTRICAS] Resultados sobre conjunto de test")

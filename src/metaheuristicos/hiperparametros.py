@@ -115,7 +115,7 @@ def clip_gen(nombre, valor):
         # Snap al valor de opciones más cercano
         return int(opciones[np.argmin(np.abs(opciones - valor))])
 
-    raise ValueError(f"Tipo de gen desconocido: {tipo}")
+    raise ValueError(f"Tipo de gen desconocido: {tipo}") # Si no se encuentra el tipo de gen, se lanza un error
 
 # ---------------------------------------------------------------------------
 # Decodificador: Wolf → dict para MLPClassifier

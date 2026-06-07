@@ -196,6 +196,39 @@ def main():
     print("=" * 60)
 
 
+class _Logger(object):
+    def __init__(self, filename):
+        self.terminal = sys.stdout
+        self.log = open(filename, "w", encoding="utf-8")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
+
 if __name__ == "__main__":
+    # Iniciar captura de evidencia
+    os.makedirs("Resultados_Evidencia", exist_ok=True)
+    ruta_log = "Resultados_Evidencia/logs_ejecucion.txt"
+    
+    # Redirigir la salida estándar y de errores al logger y a la consola
+    sys.stdout = _Logger(ruta_log)
+    sys.stderr = sys.stdout
+
+    print("=" * 60)
+    print("[INFO] INICIANDO EJECUCIÓN CON REGISTRO DE EVIDENCIA")
+    print(f"[INFO] Archivo destino: {ruta_log}")
+    print("=" * 60 + "\n")
+
+    # Ejecutar el pipeline
     main()
+
+    print("\n" + "=" * 60)
+    print("[INFO] EJECUCIÓN FINALIZADA.")
+    print(f"[INFO] Toda la evidencia fue guardada exitosamente en: {ruta_log}")
+    print("=" * 60)
+
     sys.exit(0)

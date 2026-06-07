@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
-BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) #
 RUTA_CSV  = os.path.join(BASE_DIR, "DryBeanDataset", "Dry_Bean_Dataset.csv")
 
 FEATURES = [
@@ -42,6 +42,13 @@ def preprocesar(df):
     print(f"[INFO] Shape X: {X.shape}, Shape y: {y.shape}")
 
     return X, y, scaler, le  
+
+if __name__ == "__main__":
+    df = cargar_datos()
+    X, y, scaler, le = preprocesar(df)
+    print(y)
+
+    
 
 
     

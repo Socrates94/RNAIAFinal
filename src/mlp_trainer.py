@@ -18,7 +18,7 @@ def crear_modelo(hidden_layer_sizes=(100, 50),
     """
     Instancia un MLPClassifier con los hiper-parámetros dados.
     Estos hiper-parámetros definen el espacio de búsqueda del
-    optimizador híbrido GWO-GA.
+    optimizador híbrido GA-GWO.
 
     Args:
         hidden_layer_sizes (tuple): Neuronas por capa oculta.
@@ -95,11 +95,11 @@ def evaluar_fitness(wolf, X_train, y_train, X_val, y_val):
         float: Accuracy en validación (entre 0.0 y 1.0).
     """
     # decodificar() ya retorna early_stopping=False y sin validation_fraction
-    hiperparametros = decodificar(wolf)
-    modelo = crear_modelo(**hiperparametros)
-    modelo.fit(X_train, y_train)
-    fitness = modelo.score(X_val, y_val)
-    return fitness
+    hiperparametros = decodificar(wolf) # Convierte el lobo a diccionario
+    modelo = crear_modelo(**hiperparametros) # El ** es para desempaquetar el diccionario
+    modelo.fit(X_train, y_train) # Entrena el modelo con los datos de entrenamiento
+    fitness = modelo.score(X_val, y_val) # Evalua en validacion y devuelve el accuracy
+    return fitness # Retorna la fitness
 
 
 def evaluar_final(hiperparametros, X_train, y_train, X_test, y_test):

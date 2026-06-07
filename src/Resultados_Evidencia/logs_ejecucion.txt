@@ -1,0 +1,133 @@
+============================================================
+[INFO] INICIANDO EJECUCIÓN CON REGISTRO DE EVIDENCIA
+[INFO] Archivo destino: Resultados_Evidencia/logs_ejecucion.txt
+============================================================
+
+============================================================
+Proyecto: Optimizacion hibrida GWO/GA para MLP — Dry Bean
+============================================================
+
+[INFO] Cargando dataset desde: /home/daniel/Escritorio/Proyectos finales/IA/DryBeanDataset/Dry_Bean_Dataset.csv
+[INFO] Filas: 13611, Columnas: 17
+
+============================================================
+ETAPA 2 — Preprocesamiento
+============================================================
+[INFO] Clases: ['BARBUNYA', 'BOMBAY', 'CALI', 'DERMASON', 'HOROZ', 'SEKER', 'SIRA']
+[INFO] Shape X: (13611, 16), Shape y: (13611,)
+[INFO] Preprocesamiento completado.
+
+============================================================
+ETAPA 3 — Division de datos (70 / 15 / 15)
+============================================================
+[INFO] Train:      9527 muestras (70%)
+[INFO] Validation: 2042 muestras (15%)
+[INFO] Test:       2042 muestras (15%)
+[INFO] Splits exportados como CSV en: /home/daniel/Escritorio/Proyectos finales/IA/DryBeanDataset/split
+[INFO] Split completado.
+
+============================================================
+ETAPA 4 — Optimizacion hibrida AG + GWO
+============================================================
+============================================================
+[HÍBRIDO AG+GWO] Inicializando optimización
+  Población: 20 lobos
+  Iteraciones máximas: 30
+  Prob. cruce: 0.8
+  Prob. mutación: 0.15
+============================================================
+
+[ITER 00] Mejor fitness inicial: 0.9295
+  Alpha: {'hidden_layer_sizes': (59, 104), 'activation': 'logistic', 'solver': 'adam', 'alpha': 0.0018796531240050248, 'learning_rate_init': 0.010487952731136113, 'batch_size': 64, 'max_iter': 217, 'early_stopping': False, 'random_state': 42, 'verbose': False}
+[ITER 01] Mejor: 0.9295  Media: 0.9236  Mediana: 0.9246  Desv: 0.0051  a: 1.933
+[ITER 02] Mejor: 0.9339  Media: 0.9256  Mediana: 0.9248  Desv: 0.0040  a: 1.867
+[ITER 03] Mejor: 0.9339  Media: 0.9265  Mediana: 0.9261  Desv: 0.0044  a: 1.800
+[ITER 04] Mejor: 0.9339  Media: 0.9265  Mediana: 0.9270  Desv: 0.0045  a: 1.733
+[ITER 05] Mejor: 0.9339  Media: 0.9264  Mediana: 0.9258  Desv: 0.0043  a: 1.667
+[ITER 06] Mejor: 0.9344  Media: 0.9269  Mediana: 0.9263  Desv: 0.0046  a: 1.600
+[ITER 07] Mejor: 0.9344  Media: 0.9277  Mediana: 0.9270  Desv: 0.0034  a: 1.533
+[ITER 08] Mejor: 0.9344  Media: 0.9262  Mediana: 0.9258  Desv: 0.0047  a: 1.467
+[ITER 09] Mejor: 0.9344  Media: 0.9271  Mediana: 0.9270  Desv: 0.0040  a: 1.400
+[ITER 10] Mejor: 0.9344  Media: 0.9280  Mediana: 0.9275  Desv: 0.0035  a: 1.333
+[ITER 11] Mejor: 0.9344  Media: 0.9271  Mediana: 0.9278  Desv: 0.0045  a: 1.267
+[ITER 12] Mejor: 0.9344  Media: 0.9270  Mediana: 0.9268  Desv: 0.0043  a: 1.200
+[ITER 13] Mejor: 0.9344  Media: 0.9283  Mediana: 0.9273  Desv: 0.0032  a: 1.133
+[ITER 14] Mejor: 0.9344  Media: 0.9276  Mediana: 0.9268  Desv: 0.0033  a: 1.067
+[ITER 15] Mejor: 0.9344  Media: 0.9282  Mediana: 0.9287  Desv: 0.0036  a: 1.000
+[ITER 16] Mejor: 0.9344  Media: 0.9266  Mediana: 0.9265  Desv: 0.0054  a: 0.933
+[ITER 17] Mejor: 0.9344  Media: 0.9275  Mediana: 0.9273  Desv: 0.0037  a: 0.867
+[ITER 18] Mejor: 0.9344  Media: 0.9274  Mediana: 0.9270  Desv: 0.0036  a: 0.800
+[ITER 19] Mejor: 0.9344  Media: 0.9274  Mediana: 0.9268  Desv: 0.0038  a: 0.733
+[ITER 20] Mejor: 0.9344  Media: 0.9267  Mediana: 0.9263  Desv: 0.0042  a: 0.667
+[ITER 21] Mejor: 0.9344  Media: 0.9274  Mediana: 0.9268  Desv: 0.0036  a: 0.600
+[ITER 22] Mejor: 0.9344  Media: 0.9274  Mediana: 0.9265  Desv: 0.0037  a: 0.533
+[ITER 23] Mejor: 0.9344  Media: 0.9272  Mediana: 0.9268  Desv: 0.0035  a: 0.467
+[ITER 24] Mejor: 0.9344  Media: 0.9270  Mediana: 0.9256  Desv: 0.0038  a: 0.400
+[ITER 25] Mejor: 0.9344  Media: 0.9279  Mediana: 0.9275  Desv: 0.0039  a: 0.333
+[ITER 26] Mejor: 0.9344  Media: 0.9271  Mediana: 0.9268  Desv: 0.0036  a: 0.267
+[ITER 27] Mejor: 0.9344  Media: 0.9276  Mediana: 0.9263  Desv: 0.0035  a: 0.200
+[ITER 28] Mejor: 0.9344  Media: 0.9273  Mediana: 0.9275  Desv: 0.0044  a: 0.133
+[ITER 29] Mejor: 0.9344  Media: 0.9270  Mediana: 0.9256  Desv: 0.0042  a: 0.067
+[ITER 30] Mejor: 0.9344  Media: 0.9306  Mediana: 0.9300  Desv: 0.0016  a: 0.000
+
+============================================================
+[HÍBRIDO AG+GWO] Optimización finalizada
+  Mejor fitness: 0.9344
+  Mejores hiper-parámetros: {'hidden_layer_sizes': (78, 93), 'activation': 'logistic', 'solver': 'adam', 'alpha': 0.0016610065247003793, 'learning_rate_init': 0.004235667248974271, 'batch_size': 64, 'max_iter': 189, 'early_stopping': False, 'random_state': 42, 'verbose': False}
+============================================================
+
+============================================================
+ETAPA 5 — Entrenamiento final con mejores hiperparametros
+============================================================
+
+[RESULTADO FINAL]
+  Hiper-parámetros: {'hidden_layer_sizes': (78, 93), 'activation': 'logistic', 'solver': 'adam', 'alpha': 0.0016610065247003793, 'learning_rate_init': 0.004235667248974271, 'batch_size': 64, 'max_iter': 189, 'early_stopping': False, 'random_state': 42, 'verbose': False}
+  Accuracy en test: 0.9358
+  Épocas ejecutadas: 150
+  Pérdida final:     0.176222
+[INFO] Curva de pérdida guardada en: /home/daniel/Escritorio/Proyectos finales/IA/Graficas/Resultados/curva_perdida.png
+[INFO] Entrenamiento final completado.
+
+============================================================
+ETAPA 6 — Evaluacion sobre conjunto de test
+============================================================
+============================================================
+[MÉTRICAS] Resultados sobre conjunto de test
+============================================================
+  Accuracy:    0.9358
+  F1 Macro:    0.9464
+  F1 Weighted: 0.9359
+
+              precision    recall  f1-score   support
+
+    BARBUNYA       0.96      0.94      0.95       198
+      BOMBAY       1.00      1.00      1.00        79
+        CALI       0.94      0.95      0.95       244
+    DERMASON       0.94      0.92      0.93       532
+       HOROZ       0.94      0.94      0.94       289
+       SEKER       0.95      0.97      0.96       304
+        SIRA       0.89      0.90      0.89       396
+
+    accuracy                           0.94      2042
+   macro avg       0.95      0.95      0.95      2042
+weighted avg       0.94      0.94      0.94      2042
+
+[INFO] Matriz de confusión guardada en: /home/daniel/Escritorio/Proyectos finales/IA/Graficas/Resultados/matriz_confusion.png
+[INFO] Evaluacion completada.
+
+============================================================
+ETAPA 7 — Graficas del optimizador
+============================================================
+[INFO] Evolución del fitness guardada en: /home/daniel/Escritorio/Proyectos finales/IA/Graficas/Resultados/evolucion_fitness.png
+[INFO] Tendencia central guardada en: /home/daniel/Escritorio/Proyectos finales/IA/Graficas/Resultados/tendencia_central.png
+[INFO] Coeficiente 'a' guardado en: /home/daniel/Escritorio/Proyectos finales/IA/Graficas/Resultados/coeficiente_a.png
+[INFO] Graficas del optimizador guardadas.
+
+============================================================
+[INFO] Pipeline finalizado.
+============================================================
+
+============================================================
+[INFO] EJECUCIÓN FINALIZADA.
+[INFO] Toda la evidencia fue guardada exitosamente en: Resultados_Evidencia/logs_ejecucion.txt
+============================================================
